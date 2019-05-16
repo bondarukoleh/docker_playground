@@ -1,0 +1,4 @@
+Docker is all about the speed and cheapness of virtualization. 
+
+Docker CE - community edition.
+Docker EE - enterprise edition.
