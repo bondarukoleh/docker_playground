@@ -2,3 +2,42 @@ Docker is all about the speed and cheapness of virtualization.
 
 Docker CE - community edition.
 Docker EE - enterprise edition.
+
+Docker versioning:
+Edge - is beta, comes out every month.
+Stable - one in quarter.
+
+Docker on Windows.
+2 types of containers. Windows and Linux containers.
+Concept is basically the same.
+Docker for Windows -> works on Windows 10 Pro/Enterprise only. For rest - we need to install docker toolbox.
+  Witch make it little less functional, and more overhead. Installation pretty simple.
+
+Docker for Windows, to run Linux containers uses Hyper-V, it's a small Linux VM on Windows. And as you probably get it, 
+only Windows 10 Pro/Enterprise has Hyper-V. For rest - we need to setup workaround, like VirtualBox.
+
+Docker for Windows - PowerShell native. Not PowerShell ISE (Integrated Scripting Environment)
+  (PowerShell.exe and PowerShell_ise.exe). ISE - gui tool, with extended functional, but as far as I get - we don't need
+  it in our case.
+
+For Win 7/8/10 Home - we need to download docker toolbox, and docker will use for Linux containers - VirtualBox.
+Docker for these guys doesn't support Windows containers.
+Installation: 
+store.docker.com
+Download docker toolbox. When you run it - it's a small installation soft. It will download small boot2docker.iso
+  (with docker installed), create a VirtualBox linux machine with boot2docker.iso, and start it. So simply it's
+  the same VirtualBox linux VM with docker inside, and that's the way you may play with it.
+  With toolbox there a cli tool docker-machine -> powerful thing to setting and managing containers. One way to use it
+  it's instead of VirtualBox gui setting the VMs hardware properties, we can set it with docker-machine, without 
+  starting gui of VirtualBox.
+  Docker inside VM has automatically mounted folder from Windows - C:\Users. (also called as bind map) So if you want to
+  share something from the box - you can use it. It's mostly for code, do not share DB or something heavily bound to 
+  OS architecture.
+
+Win Server 2016 - support native Windows containers. We can install Docker toolbox here too,
+  but not use it for production.
+
+For Mac
+>10.10.3 - you can install docker.
+<10.10.3 - you need docker toolbox
+- another option, run docker in any Linux VM that you can run on your mac.
