@@ -33,6 +33,8 @@ Download docker toolbox. When you run it - it's a small installation soft. It wi
   Docker inside VM has automatically mounted folder from Windows - C:\Users. (also called as bind map) So if you want to
   share something from the box - you can use it. It's mostly for code, do not share DB or something heavily bound to 
   OS architecture.
+  If you cannot configure your shell -> $>docker-machine env default in docker toolbox, and there is a command to
+    configure
 
 Win Server 2016 - support native Windows containers. We can install Docker toolbox here too,
   but not use it for production.
