@@ -43,3 +43,4 @@ For Mac
 >10.10.3 - you can install docker.
 <10.10.3 - you need docker toolbox
 - another option, run docker in any Linux VM that you can run on your mac.
+$>docker version -> to  check how didi you setup thinds.
