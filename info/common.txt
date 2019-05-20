@@ -38,6 +38,14 @@ Win Server 2016 - support native Windows containers. We can install Docker toolb
   but not use it for production.
 
 For Mac
->10.10.3 - you can install docker.
-<10.10.3 - you need docker toolbox
+>10.12 - you can install docker.
+<10.12 - you need docker toolbox
 - another option, run docker in any Linux VM that you can run on your mac.
+- run Windows VM on your mac and install docker on Windows. (epic win. Even more - run Linux VM in Windows VM on mac
+  but for nested virtualization extra setup needed. In this case VM ware fusion.)
+  In settings of docker - you can set mounted folders from your host machine.
+  Docker on mac - running in little VM. So we can set RAM, memory and all stuff. 
+
+
+
+
