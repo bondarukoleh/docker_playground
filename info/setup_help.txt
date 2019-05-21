@@ -1,7 +1,5 @@
 # The Best Way to Set Up Docker for Your OS
 
-
-
 ## Docker for Windows 10 Pro/Ent: Setup and Tips
 Win 10 Pro/Ent
 https://hub.docker.com/editions/community/docker-ce-desktop-windows

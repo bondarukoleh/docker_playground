@@ -1,0 +1,26 @@
+$> docker version
+returns a version of a client (docker command line, cli), and the version of server (engine)
+Verifies that client can talk to the engine.
+On Windows server also called service, on Mac/Linux - demon.
+What's happening it's a cli talks to the server and returns values and results from that talking.
+
+$>docker info
+returns configuration values of engine.
+
+$>docker (hit enter) - list of all commands, including management (group of commands). But since there are a lot of them
+docker divide them all into groups, management commands. So new way to type them:
+docker <command> <sub-command> (option) "docker container run", old way should work also
+  docker <command> (option) "docker run".
+
+Image vs Container
+Image - binaries, libraries, source code that all make up your application.
+Containers - is an instance of IMAGE running as a process. We can have multiple containers based on the same image.
+
+$>docker run - starts container, new instance from docker.
+$>docker container run --publish 82:80 nginx -> runs a nginx container, and binds http://192.168.99.100:82 -> localhost:80
+  where nginx server is running.
+
+If we are using docker toolbox - ip is http://192.168.99.100
+
+
+
