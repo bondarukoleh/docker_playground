@@ -16,11 +16,32 @@ Image vs Container
 Image - binaries, libraries, source code that all make up your application.
 Containers - is an instance of IMAGE running as a process. We can have multiple containers based on the same image.
 
+DOCKER RUN
 $>docker run - starts container, new instance from docker.
 $>docker container run --publish 82:80 nginx -> runs a nginx container, and binds http://192.168.99.100:82 -> localhost:80
   where nginx server is running.
-
 If we are using docker toolbox - ip is http://192.168.99.100
+So by this command - docker pull latest nginx image from Docker Hub, and start it as a new container. And it binds all
+  traffic from host:82 port to container:80 port.
+$>docker container run --publish 82:80 --detach nginx "--detach" flag runs the container in background process, and 
+  don't grabs the command line terminal control.
+$>docker container run --publish 82:80 --detach --name my_nginx_container nginx
+And you can stop, start, kill, rm, logs -> all these commands will work with containers.
 
+$>docker container ls | docker ps -> lists the running containers, ids, and statuses, -a flag -> shows all containers.
+$>docker container stop (container_id) | docker stop (container_id) -> stop the container but shouldn't remove it.
+
+$>docker container run -> always start a NEW container. 
+$>docker container start -> starts a stopped one.
+$>docker container logs (id|name) -> show logs of container.
+$>docker container top (id|name) -> show the running processes in container.
+$>docker container rm (id|name) (id|name) (id|name) ... -> remove not running containers. You cannot remove running one,
+  you should stop it first (but with docker rm -f (force) - you can rm running container). Also "docker ps -q -a" 
+  -> returns all ids, witch means $>docker rm (docker ps -q -a) -> removes all containers.
+
+So how the docker run works? First it tries to find image name that we pass to command in local image cash, if null, it 
+  goes to docker hub and tries to find image name there. Pulls it, stores in local cash. Starts a container, gives it 
+  virtual network, binds the port.
+  We can change version of image by ...run -d nginx:1.11 nginx -T; (-T -> to change the terminal)
 
 

@@ -7,4 +7,5 @@ Docker versioning:
 Edge - is beta, comes out every month.
 Stable - one in quarter.
 
-Image vs Container
+Any command has "--help"
+$>docker container rm --help -> show you all possible variations of this command flags
