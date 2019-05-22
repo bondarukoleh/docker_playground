@@ -23,7 +23,7 @@ $>docker container run --publish 82:80 nginx -> runs a nginx container, and bind
 If we are using docker toolbox - ip is http://192.168.99.100
 So by this command - docker pull latest nginx image from Docker Hub, and start it as a new container. And it binds all
   traffic from host:82 port to container:80 port.
-$>docker container run --publish 82:80 --detach nginx "--detach" flag runs the container in background process, and 
+$>docker container run --publish 82:80 --detach (-d) nginx; "--detach" flag runs the container in background process, and 
   don't grabs the command line terminal control.
 $>docker container run --publish 82:80 --detach --name my_nginx_container nginx
 And you can stop, start, kill, rm, logs -> all these commands will work with containers.
@@ -37,11 +37,44 @@ $>docker container logs (id|name) -> show logs of container.
 $>docker container top (id|name) -> show the running processes in container.
 $>docker container rm (id|name) (id|name) (id|name) ... -> remove not running containers. You cannot remove running one,
   you should stop it first (but with docker rm -f (force) - you can rm running container). Also "docker ps -q -a" 
-  -> returns all ids, witch means $>docker rm (docker ps -q -a) -> removes all containers.
+  -> returns all ids, witch means $>docker rm $(docker ps -q -a) -> removes all containers.
 
 So how the docker run works? First it tries to find image name that we pass to command in local image cash, if null, it 
   goes to docker hub and tries to find image name there. Pulls it, stores in local cash. Starts a container, gives it 
   virtual network, binds the port.
   We can change version of image by ...run -d nginx:1.11 nginx -T; (-T -> to change the terminal)
+  
+  So container is up and running, and if we type docker top (name) -> we'll see that container has some processes running
+  in container, but if we type ps (on Linux) -> we'll see that same processes we can se on Linux machine, because - it's the
+  same place where everything happening. On Win/Mac - docker runs in separate VM - so we need to switch to them:
+  On Windows -> it's a LinuxKit Linux running in Hyper-V or VirtualBox VM. To switch to it you should do something like:
+  docker run -it --rm --privileged --pid=host justincormack/nsenter1
+  On Mac -> it's an Alpine Linux running in a special xhyve VM, to switch there are options:
+  a) Note this isn't a list of commands to run in order.
+    connect to tty on Docker for Mac VM
+      screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
+    disconnect that session but leave it open in background
+      Ctrl-a d
+    list that session that's still running in background
+      screen -ls
+    reconnect to that session (don't open a new one, that won't work and 2nd tty will give you garbled screen)
+      screen -r
+    kill this session (window) and exit
+      Ctrl-a k
+  b) it’s running a container (using the debian image..nothing special about it other than it apparently has nsenter
+   installed), with pid=host (so you are in the process space of the mini VM running Docker4Mac),
+   and then nsenter says “whatever is pid 1, use that as context, and enter all the namespaces of that,
+   and run a shell there:
+   docker run -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh
+  c) docker run -it --rm --privileged --pid=host justincormack/nsenter1
 
+  So when we get into VM, or if we are on Linux, we can see that all processes that run in container - not hidden, they are
+  running with docker on the same layer.
+
+  We're thinking about the docker as a Linux demon (service) that can run only Linux images, but now - we have ability 
+    to run even Windows images in Docker. They have problems with network, but still available.
+  
+  When you want to pass some environment variables to container -> use --env (-e) flag
+  $>docker container run -e MYSQL_RANDOM_ROOT_PASSWORD=yes -p 3306:3306 -d --name mysql mysql; (root password you can find
+    in container logs, like "GENERATED ROOT PASSWORD: oiDeipacho5ahf2mujahNg1haith8io0")
 
