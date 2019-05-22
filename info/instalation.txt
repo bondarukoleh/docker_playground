@@ -39,3 +39,8 @@ For Mac
   In settings of docker - you can set mounted folders from your host machine.
   Docker on mac - running in little VM. So we can set RAM, memory and all stuff.  
   $>docker version -> to check how dandy you've setup docker things.
+
+For Linux
+3 ways -> script, store and docker-machine.
+Script: curl -sSL https://get.docker.com/ | sh
+Store: instructions for every distributive. Red Head - supports only Docker EE (paid)
