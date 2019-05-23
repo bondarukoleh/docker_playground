@@ -78,3 +78,7 @@ So how the docker run works? First it tries to find image name that we pass to c
   $>docker container run -e MYSQL_RANDOM_ROOT_PASSWORD=yes -p 3306:3306 -d --name mysql mysql; (root password you can find
     in container logs, like "GENERATED ROOT PASSWORD: oiDeipacho5ahf2mujahNg1haith8io0")
 
+Info about containers
+$>docker container top -> processes in container
+$>docker container inspect -> config details, json array
+$>docker container stats -> performance statistics for all containers (--no-stream flag -> just to get info to terminal)

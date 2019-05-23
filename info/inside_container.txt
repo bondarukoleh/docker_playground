@@ -1,0 +1,15 @@
+$>docker container run -it -> start new container interactively
+-i, --interactive Keep STDIN open even if not attached
+-t, --tty Allocate a pseudo-TTY, gives you a-like ssh command line interface, so it's like you ssh to your container
+
+$>docker container exec -it -> run addition command to existing container.
+
+Something you can configure just from the run command.
+docker container run [OPTIONS] IMAGE [COMMAND] [ARG...]
+As we can see after IMAGE (nginx, mysql ...) we have ability to pass some commands that will be executed as soon as 
+  container starts.
+
+For example docker container run -it nginx bash -> will give you a terminal inside the running container.
+When you finish your work, and just exit from container bash cli -> docker stops automatically. 
+
+
