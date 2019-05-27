@@ -9,7 +9,13 @@ docker container run [OPTIONS] IMAGE [COMMAND] [ARG...]
 As we can see after IMAGE (nginx, mysql ...) we have ability to pass some commands that will be executed as soon as 
   container starts.
 
-For example docker container run -it nginx bash -> will give you a terminal inside the running container.
+For example $>docker container run -it nginx bash -> will give you a terminal inside the running container.
 When you finish your work, and just exit from container bash cli -> docker stops automatically. 
 
+If you install something in your container, stop and start it once again -> you'll have your installed 
+stuff there, but if you created a new container -> ou won't get those things. 
+
+$>docker container start -ai container_name (-a for attach, attaches STDOUT/ER and forward signal)
+But be aware, if you've create a container from some image - and didn't set the "-it _name_ bash"
+as an command to execute - after you'll stop container - and start it - bash will be executed.
 

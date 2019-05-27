@@ -19,7 +19,7 @@ Containers - is an instance of IMAGE running as a process. We can have multiple 
 DOCKER RUN
 $>docker run - starts container, new instance from docker.
 $>docker container run --publish 82:80 nginx -> runs a nginx container, and binds http://192.168.99.100:82 -> localhost:80
-  where nginx server is running.
+  where nginx server is running. (-p -> Publish a container’s port(s) to the host)
 If we are using docker toolbox - ip is http://192.168.99.100
 So by this command - docker pull latest nginx image from Docker Hub, and start it as a new container. And it binds all
   traffic from host:82 port to container:80 port.
