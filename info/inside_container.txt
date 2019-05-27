@@ -18,4 +18,13 @@ stuff there, but if you created a new container -> ou won't get those things.
 $>docker container start -ai container_name (-a for attach, attaches STDOUT/ER and forward signal)
 But be aware, if you've create a container from some image - and didn't set the "-it _name_ bash"
 as an command to execute - after you'll stop container - and start it - bash will be executed.
+But if you didn't set bash from the start - it won't appear.
 
+$>docker container exec -it container_name program_i_want_to_execute (i.e. bash) -> this will start 
+process inside a running container.
+
+Note that "ps" is no longer included in default containers anymore.
+
+Since you've started an another process inside container, even since you've exit from container and it
+should stop automatically -> container doesn't stopped, because there are some addition process is
+running inside container.

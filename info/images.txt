@@ -1,0 +1,4 @@
+$> docker pull container_name
+$>docker image ls
+
+(if there is no bash inside container)
