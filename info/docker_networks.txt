@@ -1,0 +1,16 @@
+When we start the container and make a -p (expose ports --publish) on it -> we connecting a particular (конкретной) private network. 
+So it's a virtual private network "bridge" (by default)
+Each of these networks routs through NAT firewall on host machine IP, it's a special containers demon (service) with witch
+containers can access outer network and your own
+* All the containers can talk to each other inside our host, even without -p. So for example we have mysql and php apache 
+containers, and they can talk to each other without setting a bounded port.(-p)
+* Good practice is to create a new virtual network for each logical connected containers.
+ network "my_web_app" for mysql and php, or "my_api" for mongo and nodejs containers.
+* Many of network setting can be configurable.
+So we can:
+- create a private network per app.
+- Attach containers to more then 1 virtual network (or none).
+- Skip virtual network and use host IP (--new=host)
+
+Docker network drivers could be changed to get new abilities.
+
