@@ -82,3 +82,8 @@ Info about containers
 $>docker container top -> processes in container
 $>docker container inspect -> config details, json array
 $>docker container stats -> performance statistics for all containers (--no-stream flag -> just to get info to terminal)
+
+$>docker container port container_name -> "80/tcp -> 0.0.0.0:3000" To get bounded ports of container.
+If you've created container (via run) from image without bounded port you cannot stop and start it -> port command
+  won't tell you anything.
+

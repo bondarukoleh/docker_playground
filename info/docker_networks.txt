@@ -14,3 +14,60 @@ So we can:
 
 Docker network drivers could be changed to get new abilities.
 
+To get settings of container - we can
+$>docker container inspect container_name | grep "needed setting" 
+But it has such flag as --format
+$>docker container inspect container_name --format '{{ .NeededSetting.NeededSubSetting }}'
+$>docker container inspect container_name --format '{{ .NetworkSettings.IPAddress }}' -> 172.17.0.2
+
+And address of my machine is 
+$>ifconfig en0 -> inet 172.29.220.21
+
+As we can see they are not the same.
+So the container network explanation:
+When we start a container, and give it -p 3000:2000 that means bind 3000 port on host machine and redirect all traffic 
+from it to 2000 port in container. Redirection done via virtual network. By default it is bridge, you can check it
+via "inspect" command (in NetworkSettings).
+"NetworkSettings": {
+ "Ports": {
+                "80/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "3000"
+                    }
+                ]
+            }
+ "Networks": {
+                "bridge": {
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.2",
+                    "IPPrefixLen": 16,
+                    "MacAddress": "02:42:ac:11:00:02",
+                    ...
+                }
+            }
+...
+}
+
+And containers that are in this bridge virtual network can talk to each other. That's why we can put a few containers in
+some other virtual network ("my_app" with nginx and node containers), and they will be in separate virtual network.
+
+So when we open bind a port to container - we break thru host firewall and make this binding thru virtual network.
+
+-------------\     ---------         ---------   ------------  
+--------------\   | Host    |       | Virtual | |            |   
+Incoming Traffic  | Firewall| ----> | "bridge"| | Container1 | 
+--------------/   |         |       | Network | |            |
+-------------/     ---------  \       ---------  ------------
+                               \                              
+                                \    ---------   ------------  
+                                 \  | Virtual | |            |   
+                                    | "my_app"| | Container2 | 
+                                    | Network | |            |
+                                     ---------   ------------
+  
+To make these two containers talk to each other they have to go thru public port of host machine.
+And you do remember that we can bind public port only once. So if container1 is -p 8080:4000 
+we cannot make container2 is -p 8080:4444, because it's already taken. Also as you get it container2 can speak to 
+container1 via hostIp:8080.
+
