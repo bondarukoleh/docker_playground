@@ -71,3 +71,47 @@ And you do remember that we can bind public port only once. So if container1 is 
 we cannot make container2 is -p 8080:4444, because it's already taken. Also as you get it container2 can speak to 
 container1 via hostIp:8080.
 
+CLI commands:
+$>docker network ls -> show networks.
+NETWORK ID          NAME                DRIVER              SCOPE
+fb4e3697e5e6        bridge              bridge              local
+69a93a2e2232        host                host                local
+c44933144555        none                null                local
+
+Bridge - is a default virtual network, that bridges traffic from your container thru NET Firewall up
+  to physical network that host is connected to.
+Host - if we put containers in it, this network can bind container directly PN (physical network) of 
+  the host, witch can gain performance of network traffic by skipping VN (Virtual Network) proxy, but
+  sacrifices security of container.
+None - removes eth0 and leaves you with 
+
+
+$>docker network inspect network_name -> (bridge, host, etc) returns a json array. as you can see -
+ we can inspect everything.
+ ...
+ "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16", -> default subnet for all containers 
+                    "Gateway": "172.17.0.1" -> gateway to go to physical hos network.
+                }
+            ]
+        },
+ ...
+ "Containers": {
+            "9fa59e0bdd4e13a99231699cc5e4de9dc9aa9842108242433402478a6a712dc0": {
+                "Name": "ng",
+                "EndpointID": "8a9716e4fcac5438f7dd6f572be6b740296e8dc5b9b734c2d5937c2b76b8e2e9",
+                "MacAddress": "02:42:ac:11:00:02",
+                "IPv4Address": "172.17.0.2/16",
+                "IPv6Address": ""
+            }
+        } -> There are running containers in this virtual network, and we can check them.
+ ...
+
+$>docker network create --driver -> crate a network
+$>Attach network connect -> Attach a network to container
+$>Detach network connect -> Container network disconnect a network to container
+  
