@@ -1,0 +1,14 @@
+So in container routing - very important thing is - naming.
+Relying on IP addresses or IDs of container - it such dynamic world of docker is anti-pattern.
+Docker has build-in DNS server that containers using by default to talk to each other.
+
+Docker DNS can use container names as a "host" names to rout traffic to these containers.
+So if container in one VN (and we apt-get update && apt-get install iputils-ping in them) we can:
+$>docker container exec -it ng ping ng_diff_net -> and we'll see that they can talk to each other
+and even more that DNS resolved container "host" by their name. 
+
+Pay attention that default bridge VN DOESN'T have DNS. So ping by name - won't work, you should 
+specify the IP of container in same Vn to ping it.
+So it's much easier to create your own VN with default DNS.
+To solve this situation with DNS in bridge - we can run (create) containers in bridge Vn with --link
+option.

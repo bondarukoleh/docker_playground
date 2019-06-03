@@ -1,11 +1,12 @@
-When we start the container and make a -p (expose ports --publish) on it -> we connecting a particular (конкретной) private network. 
-So it's a virtual private network "bridge" (by default)
-Each of these networks routs through NAT firewall on host machine IP, it's a special containers demon (service) with witch
-containers can access outer network and your own
-* All the containers can talk to each other inside our host, even without -p. So for example we have mysql and php apache 
-containers, and they can talk to each other without setting a bounded port.(-p)
+When we start the container and make a -p (expose ports --publish) on it -> we connecting container
+  a particular (конкретной) private network. 
+So it's a virtual private network "bridge" (by default).
+Each of these networks routs through NAT firewall on host machine IP, it's a special containers demon
+  (service) with witch containers can access outer network and your own
+* All the containers can talk to each other inside our host, even without -p. So for example we have mysql
+  and php apache containers, and they can talk to each other without setting a bounded port.(-p)
 * Good practice is to create a new virtual network for each logical connected containers.
- network "my_web_app" for mysql and php, or "my_api" for mongo and nodejs containers.
+  network "my_web_app" for mysql and php, or "my_api" for mongo and nodejs containers.
 * Many of network setting can be configurable.
 So we can:
 - create a private network per app.
@@ -25,9 +26,9 @@ $>ifconfig en0 -> inet 172.29.220.21
 
 As we can see they are not the same.
 So the container network explanation:
-When we start a container, and give it -p 3000:2000 that means bind 3000 port on host machine and redirect all traffic 
-from it to 2000 port in container. Redirection done via virtual network. By default it is bridge, you can check it
-via "inspect" command (in NetworkSettings).
+When we start a container, and give it -p 3000:2000 that means bind 3000 port on host machine and
+  redirect all traffic from it to 2000 port in container. Redirection done via virtual network.
+  By default it is bridge, you can check it via "inspect" command (in NetworkSettings).
 "NetworkSettings": {
  "Ports": {
                 "80/tcp": [
@@ -49,10 +50,12 @@ via "inspect" command (in NetworkSettings).
 ...
 }
 
-And containers that are in this bridge virtual network can talk to each other. That's why we can put a few containers in
-some other virtual network ("my_app" with nginx and node containers), and they will be in separate virtual network.
+And containers that are in this bridge virtual network can talk to each other. That's why we can put a few
+  containers in some other virtual network ("my_app" with nginx and node containers), and they will be in
+  separate virtual network.
 
-So when we open bind a port to container - we break thru host firewall and make this binding thru virtual network.
+So when we open bind a port to container - we break thru host firewall and make this binding thru
+  virtual network.
 
 -------------\     ---------         ---------   ------------  
 --------------\   | Host    |       | Virtual | |            |   
@@ -82,9 +85,12 @@ Bridge - is a default virtual network, that bridges traffic from your container 
   to physical network that host is connected to.
 Host - if we put containers in it, this network can bind container directly PN (physical network) of 
   the host, witch can gain performance of network traffic by skipping VN (Virtual Network) proxy, but
-  sacrifices security of container.
-None - removes eth0 and leaves you with 
-
+  sacrifices security of container. Container will share the host’s network stack and all interfaces
+  from the host will be available to the container.
+None - removes eth0 and leaves you with only with localhost interface in container, doesn't attach to 
+  anything. Will not configure any IP for the container and doesn’t have any access to the external network
+  as well as for other containers. It does have the loopback address and can be used for running batch
+  jobs.
 
 $>docker network inspect network_name -> (bridge, host, etc) returns a json array. as you can see -
  we can inspect everything.
@@ -114,4 +120,51 @@ $>docker network inspect network_name -> (bridge, host, etc) returns a json arra
 $>docker network create --driver -> crate a network
 $>Attach network connect -> Attach a network to container
 $>Detach network connect -> Container network disconnect a network to container
-  
+
+$>docker network create my_app_net
+NETWORK ID          NAME                DRIVER              SCOPE
+84f117106661        bridge              bridge              local
+69a93a2e2232        host                host                local
+e4052a3a9dcc        my_app_net          bridge              local -> created with bridge driver (default)
+c44933144555        none                null                local
+
+Bridge driver - build in 3rd-party extension that gives you virtual network features, with own subnet
+  starts from 172.17.0.0 and above.
+
+We can configure IP and driver and many stuff when we creating VN.
+Also we can specify in what Network container should start by --network Options
+$>docker container run -d --name container_name --network my_app_net image_name
+$>docker network inspect my_app_net
+...
+ "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16", -> as you can see it 1 bigger than bridge.
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        }
+...
+"Containers": {
+            "391af6845de344db4ab3fcf9b5a0e1308f189ffe4d94c2c61de52bbaa7adfcac": {
+                "Name": "ng_diff_net",
+                "EndpointID": "e1d7179507f408a8e5a0867da3fdb2064f0d5f1ef611c677e0e7ba22be5e45c5",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16", -> new container has IP of new net subnet
+                "IPv6Address": ""
+            }
+        }
+...
+
+But we can also connect and disconnect any existing container with --connect Options
+$>docker network connect net_ID(name) container_ID(name)
+$>docker network connect my_app_net ng -> and in network inspect output - you'll see that in my_web_app
+  there are two containers.
+
+Also since ng container now in two VN it has two IP addresses 172.17.0.2 and 172.18.0.3. Cool.
+$>docker network disconnect VN_name(ID) container_name(ID)
+
+So it's a great ability to create your own micro environment inside some VN and expose only port that 
+  will be used to talk to your container.
