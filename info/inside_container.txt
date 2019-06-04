@@ -28,3 +28,18 @@ Note that "ps" is no longer included in default containers anymore.
 Since you've started an another process inside container, even since you've exit from container and it
 should stop automatically -> container doesn't stopped, because there are some addition process is
 running inside container.
+
+Simple task - to check different version in Ubuntu and Centos curl command.
+We should run two containers, and update package manager.
+Ubuntu -> apt-get update && apt-get install curl
+curl --version
+
+$>docker container run --rm -ti centos:7 bash ->rm will remove container as soon as I logout from it.
+$>yum update curl
+$>curl --version -> 7.29.0
+
+$>docker container run --rm -ti ubuntu:14.04 bash
+$>apt-get update && apt-get instal -y curl -> Pay attention -y, it's for answer for ubuntu question [Y,y]
+$>curl --version -> 7.35.0
+
+Another one - it's a simple Round-Robin test.
