@@ -1,4 +1,14 @@
-$> docker pull container_name
+$>docker pull container_name
 $>docker image ls
 
 (if there is no bash inside container)
+
+Image is:
+Simply - It's an app binaries and dependencies for your App, and metadata about image and how to run it.
+Official - ordered collection of root filesystem changes and the corresponding execution parameters for 
+  use within a container runtime.
+
+So there is no real OS inside images. There no kernel, kernel modules (e.g. drivers) Because kernel is 
+  provided by docker itself (it's always a tiny Linux, remember?). So there is no booting a real virtual 
+  machine. There only binaries of applications that you need. Of course there are big images of ubuntu
+  distribution, with their own package manager and all stuff. But still it's not a separate OS.

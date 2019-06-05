@@ -133,7 +133,8 @@ Bridge driver - build in 3rd-party extension that gives you virtual network feat
 
 We can configure IP and driver and many stuff when we creating VN.
 Also we can specify in what Network container should start by --network Options
-$>docker container run -d --name container_name --network my_app_net image_name
+
+$>docker container run -d --name container_name --network (or --net) my_app_net image_name
 $>docker network inspect my_app_net
 ...
  "IPAM": {

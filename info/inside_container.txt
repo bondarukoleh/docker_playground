@@ -42,4 +42,52 @@ $>docker container run --rm -ti ubuntu:14.04 bash
 $>apt-get update && apt-get instal -y curl -> Pay attention -y, it's for answer for ubuntu question [Y,y]
 $>curl --version -> 7.35.0
 
-Another one - it's a simple Round-Robin test.
+Another one - it's a simple Round-Robin test. The main idea is to create a-like load-balancer with two 
+identical containers (for example with elasticsearch, search engine that allows to quick search in big amount
+of data) and one VN. We will give same DNS name to these containers and when we will ask them -> they will
+respond randomly.
+We have ability to keep multiple containers in one VN, and they will respond to the same DNS address.
+
+$>docker container run --rm -d --net(--network) my_app_net --net-alias(--network-alias) search elasticsearch:2 ->
+  create a container in "my_app_net" with DNS name "search".
+  So we simply duplicate the above command and we have two containers with the same DNS name.
+
+$>docker container ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                NAMES
+9534a27fac98        elasticsearch:2     "/docker-entrypoint.…"   9 minutes ago       Up 9 minutes        9200/tcp, 9300/tcp   festive_elion
+3e79edc1c32e        elasticsearch:2     "/docker-entrypoint.…"   11 minutes ago      Up 11 minutes       9200/tcp, 9300/tcp   focused_sanderson
+
+$>docker container run --rm --net my_app_net -it ubuntu:14.04
+#>ping search -c (count) 1 && echo '***************************' && ping search -c 1
+
+PING search (172.18.0.2) 56(84) bytes of data.
+64 bytes from search.my_app_net (172.18.0.2): icmp_seq=1 ttl=64 time=0.104 ms
+***************************
+PING search (172.18.0.3) 56(84) bytes of data.
+64 bytes from search.my_app_net (172.18.0.3): icmp_seq=1 ttl=64 time=0.130 ms
+
+When we create a container ubuntu in my_app_net and ping "search" DNS name -> we'll see that IP that answers is 
+in 172.18.0.2 - 172.18.0.3 range. So we can say that request is send to two containers randomly.
+
+$>docker container run --rm --net my_app_net alpine nslookup search -> this means run the container alpine,
+  run the command "nslookup search" and remove yourself after it. damn.
+Name:      search
+Address 1: 172.18.0.2 search.my_app_net -> so we see that under "search" DNS name - there are several IPs.
+Address 2: 172.18.0.3 search.my_app_net
+
+$>docker container run --rm --net my_app_net centos curl -s (silent, without request info) search:9200 -> get
+  the DNS name:port. PAY ATTENTION that we've used default exposed ports that you can find in docker ps" output
+  above. This get request returns also one or another responds from elasticsearch server.
+{
+  "name" : "Adrian Corbo",
+  "cluster_name" : "elasticsearch",
+  "cluster_uuid" : "bFRfYhBwRyqPPHnfVinYaw",
+  ...
+}
+
+{
+  "name" : "Jack Frost",
+  "cluster_name" : "elasticsearch",
+  "cluster_uuid" : "8kizL2d1QxGHjSi9K-RT8g",
+  ...
+}
