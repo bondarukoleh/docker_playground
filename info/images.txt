@@ -12,3 +12,30 @@ So there is no real OS inside images. There no kernel, kernel modules (e.g. driv
   provided by docker itself (it's always a tiny Linux, remember?). So there is no booting a real virtual 
   machine. There only binaries of applications that you need. Of course there are big images of ubuntu
   distribution, with their own package manager and all stuff. But still it's not a separate OS.
+
+Docker HUB
+
+Only official images has name without "/" in it. If we create image -> it will be
+  organization_name(user_name)/image_name.
+Versions - in description there are a few one:
+  mainline - latest version
+  stable - respectively (соответственно)
+  If we look closer to description of nginx image on docker hub
+  1.17.0, mainline, 1, 1.17, latest (mainline/stretch/Dockerfile)
+  1.16.0, stable, 1.16 (stable/stretch/Dockerfile)
+
+  All these things is tags. And to pull latest/mainline version of image - we can use them. So one image
+  can have multiple tags.
+  $>docker pull nginx:1.17 | nginx:mainline | nginx:latest | nginx:1 -> will take the same affect.
+
+  $>docker image ls
+  REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE 
+  nginx               1                   62c261073ecf        41 hours ago        109MB
+  mysql               latest              990386cbd5c0        3 weeks ago         443MB
+
+  You can see TAG column. That was "docker pull nginx:1", so tag will be the same you downloaded.
+  If we don't specify tag -> we will download latest one.
+
+  mainline-alpine - is the small Linux distribution, and nginx default docker is from jessie, Debian 
+  distribution which is larger. 
+
