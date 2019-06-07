@@ -14,6 +14,7 @@ So there is no real OS inside images. There no kernel, kernel modules (e.g. driv
   distribution, with their own package manager and all stuff. But still it's not a separate OS.
 
 Docker HUB
+Its like npm for docker images.
 
 Only official images has name without "/" in it. If we create image -> it will be
   organization_name(user_name)/image_name.
@@ -23,19 +24,43 @@ Versions - in description there are a few one:
   If we look closer to description of nginx image on docker hub
   1.17.0, mainline, 1, 1.17, latest (mainline/stretch/Dockerfile)
   1.16.0, stable, 1.16 (stable/stretch/Dockerfile)
+If image is not official - we can rely on stars and pulls. Same with github.
 
   All these things is tags. And to pull latest/mainline version of image - we can use them. So one image
   can have multiple tags.
-  $>docker pull nginx:1.17 | nginx:mainline | nginx:latest | nginx:1 -> will take the same affect.
+  $>docker pull nginx:1.17 | nginx:mainline | nginx:latest | nginx:1 -> will download only one image but in list
+  of your images will be several rows under different tags.
 
   $>docker image ls
   REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE 
   nginx               1                   62c261073ecf        41 hours ago        109MB
+  nginx               1.17                62c261073ecf        2 days ago          109MB
   mysql               latest              990386cbd5c0        3 weeks ago         443MB
 
-  You can see TAG column. That was "docker pull nginx:1", so tag will be the same you downloaded.
+  You can see TAG column. That was "docker pull nginx:1 nginx:1.17", it's the same latest container but under
+  different tag.
   If we don't specify tag -> we will download latest one.
 
   mainline-alpine - is the small Linux distribution, and nginx default docker is from jessie, Debian 
   distribution which is larger. 
 
+IMAGE LAYERS
+  So image - it's not a big blob of data. Images is designed to use UNION file system concept of making layers about
+  the changes. 
+
+  If we will look at the history of image, nginx for example:
+  $>docker image history nginx:latest
+  IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
+53f3fd8007f7        4 weeks ago         /bin/sh -c #(nop)  CMD ["nginx" "-g" "daemon…   0B
+<missing>           4 weeks ago         /bin/sh -c #(nop)  STOPSIGNAL SIGTERM           0B
+<missing>           4 weeks ago         /bin/sh -c #(nop)  EXPOSE 80                    0B
+<missing>           4 weeks ago         /bin/sh -c ln -sf /dev/stdout /var/log/nginx…   22B
+<missing>           4 weeks ago         /bin/sh -c set -x  && apt-get update  && apt…   54.1MB
+<missing>           4 weeks ago         /bin/sh -c #(nop)  CMD ["bash"]                 0B
+<missing>           4 weeks ago         /bin/sh -c #(nop) ADD file:fcb9328ea4c115670…   55.3MB
+
+We'll see what was happening in image. It's a history of image layers. Some changes were costed new space for them, 
+some were just a metadata changes.
+
+When we creating a new image - we starting with first (scratch) layer. Each layer has his uniq SHA (hash) that helps 
+system to understand is there was changed something. 
