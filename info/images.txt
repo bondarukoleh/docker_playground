@@ -52,15 +52,77 @@ IMAGE LAYERS
   $>docker image history nginx:latest
   IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
 53f3fd8007f7        4 weeks ago         /bin/sh -c #(nop)  CMD ["nginx" "-g" "daemon…   0B
-<missing>           4 weeks ago         /bin/sh -c #(nop)  STOPSIGNAL SIGTERM           0B
+*<missing>          4 weeks ago         /bin/sh -c #(nop)  STOPSIGNAL SIGTERM           0B
 <missing>           4 weeks ago         /bin/sh -c #(nop)  EXPOSE 80                    0B
 <missing>           4 weeks ago         /bin/sh -c ln -sf /dev/stdout /var/log/nginx…   22B
 <missing>           4 weeks ago         /bin/sh -c set -x  && apt-get update  && apt…   54.1MB
 <missing>           4 weeks ago         /bin/sh -c #(nop)  CMD ["bash"]                 0B
 <missing>           4 weeks ago         /bin/sh -c #(nop) ADD file:fcb9328ea4c115670…   55.3MB
 
+*<missing> - means that this is layer inside the top one, it's just how docker shows it, it has SHA, but docker
+guys for some reason decided not to show it here.
+
 We'll see what was happening in image. It's a history of image layers. Some changes were costed new space for them, 
 some were just a metadata changes.
 
 When we creating a new image - we starting with first (scratch) layer. Each layer has his uniq SHA (hash) that helps 
-system to understand is there was changed something. 
+system to understand is there was changed something, that also helps to understand is layer we want to create is
+already exist.
+
+Creating Image:
+
+This is container with node app.                                                  This is container with Java app.
+ || |--------------------------------|        We expose 3000 port - docker doesn't create         ||
+ || | 5th layer. Expose 3000 port    |        another layer for this, it understand that          ||
+ || |--------------------------------|        hash is the same so it uses already created one     ||
+ || |--------------------------------|        |--------------------------------|                  ||
+ || | 4th layer. Install Node app    |        | 4th layer. Install Java app    |                  ||
+ || |--------------------------------|        |--------------------------------|                  ||
+ || |--------------------------------|        |--------------------------------|                  ||
+ || | 3nd layer. Added some ENV vars |        | 3nd layer. Added some ENV vars |                  ||
+ || |--------------------------------|        |--------------------------------|                  ||
+ || |-----------------------------------|                                                         ||
+ || | 2nd. Curl installed via apt-get   |  We want to install curl, but we don't do               ||
+ || |-----------------------------------|   it twice, we use  already created layer               ||
+ || |--------------------------------------|  We want another image with Ubuntu - docker will     ||
+ || |      1st layer. Ubuntu Image Created |  use already created layer for different image       ||
+ \/ |--------------------------------------|  since it is the same data we need.                  \/
+
+As you can see we have two different images, but they are using three same layers of data.
+So locally we keep all this information, in cache, and when we try to download new images - docker compares
+local hash with hash from docker hub, and understands are we have something already here. locally.
+Main idea - is that we never have two copies of same layer. It stored only once.
+
+RUNNING CONTAINERS
+We start container from our image of Node app. That means that docker started a new Read/Write layer on top 
+of the Node app image. So the container -> is a new stack of layers that keeps differencing between the image
+which is READ-ONLY (sic!) and the new changes made in container. If in the container some physical file was
+changed from the image, docker creates a copy of this file, and store changed file in container layer.
+
+docker inspect - shows the metadata. As it was said - image it's a binaries that will run and metadata how it
+preferred to be run.
+$>docker inspect mysql
+...
+ "Config": {
+            "Hostname": "8cd6617b3cb3",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "3306/tcp": {}, -> telling us that if you want to use it - you'll need to expose 3306 port.
+                "33060/tcp": {}
+            },
+             "Env": [ -> ENV variables that will be set in container 
+                "MYSQL_RANDOM_ROOT_PASSWORD=yes",
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "GOSU_VERSION=1.7",
+                "MYSQL_MAJOR=8.0",
+                "MYSQL_VERSION=8.0.16-2debian9"
+            ],
+            "Cmd": [ -> commands that will be run is we start container by default.
+                "mysqld"
+            ],
+...            
+As you know a lot of these stuff can be changed when we create a container, but it shows us the default config.
