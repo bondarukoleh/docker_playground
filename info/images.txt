@@ -98,6 +98,9 @@ We start container from our image of Node app. That means that docker started a 
 of the Node app image. So the container -> is a new stack of layers that keeps differencing between the image
 which is READ-ONLY (sic!) and the new changes made in container. If in the container some physical file was
 changed from the image, docker creates a copy of this file, and store changed file in container layer.
+This is Copy-On-Write strategy, COW. But be aware, since new copy of modified file is in container level, as 
+all changes - is in container level, when container is deleted - changes are also deleted, if you haven't
+setup some mount folder os something.
 
 docker inspect - shows the metadata. As it was said - image it's a binaries that will run and metadata how it
 preferred to be run.
