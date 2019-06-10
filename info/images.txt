@@ -35,7 +35,9 @@ If image is not official - we can rely on stars and pulls. Same with github.
   REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE 
   nginx               1                   62c261073ecf        41 hours ago        109MB
   nginx               1.17                62c261073ecf        2 days ago          109MB
+  bondrukoleh/nginx   latest              53f3fd8007f7        4 weeks ago         109MB
   mysql               latest              990386cbd5c0        3 weeks ago         443MB
+  bretfisher/node-docker   latest         214806ce25ce        2 weeks ago         928MB
 
   You can see TAG column. That was "docker pull nginx:1 nginx:1.17", it's the same latest container but under
   different tag.
@@ -43,6 +45,17 @@ If image is not official - we can rely on stars and pulls. Same with github.
 
   mainline-alpine - is the small Linux distribution, and nginx default docker is from jessie, Debian 
   distribution which is larger. 
+
+TAGS
+Images doesn't technically have name. As you can see they have REPOSITORY and TAG columns.
+Repository - it's either username or the organization_name/repository. Official repository has only name.
+As we can see, users have something like bretfisher/node-docker, organization like mysql/mysql-server.
+Tag - it's a pointer for some specific image commit, it's a part from github tags, and a part from name,
+and a part from labels.
+
+To add a new tag to existing image:
+$>docker image tag existing_image tag_name (nginx bondrukoleh/nginx)
+
 
 IMAGE LAYERS
   So image - it's not a big blob of data. Images is designed to use UNION file system concept of making layers about
