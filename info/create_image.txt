@@ -1,0 +1,21 @@
+Creating an image with dockerfile. Dockerfile - looks like a shell script, but it's not. It's a different language.
+
+To create image from dockerfile we need
+$>docker build -f docker_file_name
+
+Docker file commands:
+FROM (required) - base distribution what you want to use for your functionality. It's debian:jessie or alpine or ubuntu. 
+Many OS is provided with minimum functionality, without curls or any other stuff. So if you need some addition
+packages (probably it is so), you can use apt, or yum managers, so you need distribution where they are.  
+It's like: Debian, Ubuntu, Fedora, CentOS. If you want have image without anything - use FROM scratch.
+FROM debian:jessie
+
+ENV - for environment variables. Putting keys and values. Order matters, it work up down.
+ENV MY_EVN_VAR value
+ENV MY_EVN_VAR2 'some other value'
+
+RUN - here we can run any stuff. Also note about "&&" if you connect two commands with double-ampersand - that means
+
+
+
+
