@@ -64,6 +64,16 @@ $>docker image push bondarukoleh/nginx -> username/ should be the same with your
 You should do login before push. We can specify url you want to login to.
 $>docker login
 
+Pay attention that if you've logged in via docker cli, in ~/.docker/config.json
+there are "auth" info with your key. So it's better to logout after you finish your deals with docker, especial
+when you worked on shared servers and machines.
+
+So we pushed an image to docker hub. If we add another tag to it, and have "different" image tagged locally and
+try to push it to docker hub -> we'll see that such layer already exists message. So it works the same way, if
+something already exist - we don't store it twice.
+
+We also have ability to create private repositories in docker hub.
+
 IMAGE LAYERS
   So image - it's not a big blob of data. Images is designed to use UNION file system concept of making layers about
   the changes. 
