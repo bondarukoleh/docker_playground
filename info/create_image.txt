@@ -15,7 +15,25 @@ ENV MY_EVN_VAR value
 ENV MY_EVN_VAR2 'some other value'
 
 RUN - here we can run any stuff. Also note about "&&" if you connect two commands with double-ampersand - that means
+that docker will write these commands execution results in one layer, witch can save us much space.
+So install node -> in one layer, and pull repository and install packages - in another.
+RUN sudo apt-get install curl \
+ && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash \
+ && nvm install node \
+ && nvm use node -> this will be in one layer in image
+RUN npm clone http://github.com/some_repo.git && npm i -> this will be another layer, stored differently.
 
+Docker has his own log file, so we don't need to worry about it, all we want to do is to show log in stdout
+  or stderr.
 
+EXPOSE - by default NO PORT ARE OPENED in virtual network where container is running, to talk to it somehow inside
+VN where container is running - we should set them here. If we need to talk to it from other VN or from outside 
+network - we still need to expose ports when we run "docker run -p" command. So for some http server - it's 
+common to expose 80 and 443 port
+EXPOSE 80 443
+
+CMD [command1, command2] (required) - these commands will run when new container is run, or when start stopped
+container. Only one command is allowed, so if there will be multiple - last one wins.
+CMD ["ping", "8.8.8.8"] or ["npm", "run", "server stop"] (not sure about the last)
 
 

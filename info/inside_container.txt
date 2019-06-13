@@ -22,6 +22,7 @@ But if you didn't set bash from the start - it won't appear.
 
 $>docker container exec -it container_name program_i_want_to_execute (i.e. bash) -> this will start 
 process inside a running container.
+$>docker container exec -it my_node(or 342lmcasd) bash
 
 Note that "ps" is no longer included in default containers anymore.
 
@@ -76,7 +77,7 @@ Address 1: 172.18.0.2 search.my_app_net -> so we see that under "search" DNS nam
 Address 2: 172.18.0.3 search.my_app_net
 
 $>docker container run --rm --net my_app_net centos curl -s (silent, without request info) search:9200 -> get
-  the DNS name:port. PAY ATTENTION that we've used default exposed ports that you can find in docker ps" output
+  the DNS name:port. PAY ATTENTION that we've used default exposed ports that you can find in "docker ps" output
   above. This get request returns also one or another responds from elasticsearch server.
 {
   "name" : "Adrian Corbo",

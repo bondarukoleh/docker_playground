@@ -1,4 +1,4 @@
-When we start the container and make a -p (expose ports --publish) on it -> we connecting container
+When we start the container and make a -p (expose ports --publish) on it -> we connecting container to
   a particular (конкретной) private network. 
 So it's a virtual private network "bridge" (by default).
 Each of these networks routs through NAT firewall on host machine IP, it's a special containers demon
