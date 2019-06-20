@@ -58,6 +58,13 @@ To add a new tag to existing image:
 $>docker image tag source_image:tag_name target_image:tag_name
 $>docker image tag nginx bondarukoleh/nginx -> if we don't specify tag - "latest" is default one.
 
+Before push - we should create a repository with name of docker. For example
+we create repository named node10_with_ubuntu.
+That we build image with this name 
+$>docker build -t bondarukoleh/node10_with_ubuntu:basic .
+and then we can push
+$>docker push bondarukoleh/node10_with_ubuntu:latest
+
 We can push container to our docker hub.
 $>docker image push bondarukoleh/nginx -> username/ should be the same with yours.
 

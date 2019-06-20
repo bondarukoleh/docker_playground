@@ -1,7 +1,15 @@
 Creating an image with dockerfile. Dockerfile - looks like a shell script, but it's not. It's a different language.
 
 To create image from dockerfile we need
-$>docker build -f docker_file_name
+$>docker build -t tag_for_docker (if needed) -f docker_file_name
+$>docker build -t bondarukoleh/node10_with_ubuntu:latest ./docker (folder where dockerfile is)
+
+If you built an image and then changed something in dockerfile - and re-built it, you can see that layers 
+that was already created for previous one - used in new one, like "Using cache", that's the docker re-using
+layers for new images, only changed stuff is creating new layer.
+And important note is: if one line in dockerfile is changed - after that - docker need to create a hole 
+new layers sandwich, so it's important to save time and space to keep things that change often - in the 
+bottom of your docker file.
 
 Docker file commands:
 FROM (required) - base distribution what you want to use for your functionality. It's debian:jessie or alpine or ubuntu. 
