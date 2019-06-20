@@ -44,4 +44,10 @@ CMD [command1, command2] (required) - these commands will run when new container
 container. Only one command is allowed, so if there will be multiple - last one wins.
 CMD ["ping", "8.8.8.8"] or ["npm", "run", "server stop"] (not sure about the last)
 
+WORKDIR - change working directory to needed
+WORKDIR /usr/share/nginx/html
+change working directory to root of nginx webhost
+using WORKDIR is preferred to using 'RUN cd /some/path'
 
+COPY - copy file from local machine to my image. Ability to copy some source code to your image.
+COPY file_from_local.js file_in_image.js

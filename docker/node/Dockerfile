@@ -7,4 +7,12 @@ RUN apt-get update \
  && \. "$NVM_DIR/nvm.sh" \
  && nvm install v10.16.0
 
+RUN mkdir sourceCode
+
+WORKDIR /sourceCode
+
+COPY hello_world.js copied_hello_world.js
+
+RUN chmod +x copied_hello_world.js && ./copied_hello_world.js
+
 EXPOSE 3000
