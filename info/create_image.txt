@@ -49,5 +49,10 @@ WORKDIR /usr/share/nginx/html
 change working directory to root of nginx webhost
 using WORKDIR is preferred to using 'RUN cd /some/path'
 
-COPY - copy file from local machine to my image. Ability to copy some source code to your image.
+COPY - COPY <src>... <dest> The COPY instruction copies new files or directories from <src> and adds
+them to the filesystem of the container at the path <dest>. Copy file from local machine to my image.
+Ability to copy some source code to your image. Each <src> may contain wildcards and matching.
+The <dest> is an absolute path, or a path relative to WORKDIR, into which the source will be copied
+inside the destination container.
+
 COPY file_from_local.js file_in_image.js
