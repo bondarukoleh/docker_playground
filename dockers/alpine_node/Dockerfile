@@ -2,6 +2,7 @@ FROM node:10.16-alpine
 
 EXPOSE 3000
 
+RUN apk update && apk add bash
 RUN apk add --update tini
 RUN mkdir -p /usr/src/app
 
