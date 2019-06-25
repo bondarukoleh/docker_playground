@@ -1,0 +1,62 @@
+Containers are usually immutable and ephemeral, means it's something unchanged and temporary, 
+we can always throw away one container and create another.
+With that in mind we can say - "immutable infrastructure", means never change existing container
+only re-deploy it.
+But what about DB that was fulled while container was alive? Or any other changes that was made
+while container was running. Container shouldn't keep this data inside it. That's bring us to 
+"separation of concerns", means we should keep data separated from logic in container. It gives
+us ability to easily up a new version of our app, and still data will be available for new version.
+
+This problem with uniq data that created only with live container - know as "persistent data".
+Two ways of solution it - Named volumes, Volumes and Bind Mounts.
+
+Bind Mount - mounts a host directory - to container, simple mounted host folder.
+Bind mounts are basically just binding a certain directory or file from the host
+inside the container (docker run -v /hostdir:/containerdir IMAGE_NAME)
+
+Named volumes - are volumes which you create manually with docker volume create VOLUME_NAME.
+They are created in /var/lib/docker/volumes and can be referenced to by only their name.
+Let's say you create a volume called "mysql_data", you can just reference to it like this docker
+run -v mysql_data:/containerdir IMAGE_NAME.
+
+Volumes - volumes in dockerfiles, which are created by the VOLUME instruction. These volumes
+are also created under /var/lib/docker/volumes but don't have a certain name. Their "name"
+is just some kind of hash. The volume gets created when running the container and are handy
+to save persistent data, whether you start the container with -v or not.
+The developer gets to say where the important data is and what should be persistent.
+
+in dockerfile of mysql official.
+VOLUME /var/lib/mysql
+Means when container is up - create volume (some special place on host machine) and mount it to
+passed folder. If data will be created in this folder in container - it will be stored on host. 
+
+To remove that data - we need MANUALLY delete mounted folder from host machine.
+
+So you can add VOLUME /mountedFolder in dockerfile. When container is up - anything that creates
+in /mountedFolder in container - stores in /var/lib/docker/volumes/long_volume_id/_data/
+we can check in by inspecting image
+...
+ "Volumes": {
+                "/mountedFolder": {}
+            },
+...
+and inspecting container
+...
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "62b08c2747dd63827fb096b751cd12aba8a32ca24ef08dbd8e06c40c9ebb02b6",
+                "Source": "/var/lib/docker/volumes/62b08c2747dd63827fb096b751cd12aba8a32ca24ef08dbd8e06c40c9ebb02b6/_data",
+                "Destination": "/mountedFolder",
+                "Driver": "local",
+                "Mode": "",
+                "RW": true,
+                "Propagation": ""
+            }
+        ],
+...
+
+source - it is a place on host, destination is a place in container.
+Pay attention that mount created after image is created, but it's empty. When container
+is up - another mount created, and when you've add some data in mounted folder - after
+that - data appeared on host.

@@ -1,6 +1,8 @@
 FROM node:10.16-alpine
 
 RUN apk update && apk add bash
-RUN mkdir mounted
+RUN mkdir mountedFolder
 
-VOLUME /mounted
+VOLUME /mountedFolder
+
+RUN touch /mountedFolder/1.txt 
