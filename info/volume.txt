@@ -100,4 +100,22 @@ docker container run -d --name my_con -v volume_name:/mountedFolder alpine
     But we can create a name for volume. -v volume_name:/mountedFolder. It will do the same but 
     instead of long mount ID we will get a name.
     BUT be aware that if we'll create another container with same volume name - it will use
-    already created mount host folder.
+    already created mount host folder. It's a cool feature for DB, because no matter how manually
+    time you've killed or re-created container with DB - all data from them stored in one folder.
+
+We can also create a volume with "volume" command. We can set a different driver and labels for volume.
+$>docker volume create [OPTIONS] [VOLUME]
+
+BIND MOUNTS
+Maps a host file or directory to a container file or directory.
+It's a to locations pointing to one folder on host.
+If we change something in the bound folder from container, it will be changed for host
+ also since it is the same folder.
+If in host folder there is a 1.txt file, and in container folder there is a 1.txt file -> and
+and we bind these folders - host files always win, container file will be replaced with host file.
+We cannot use it Dockerfile, must be set at container run command. At runtime
+
+So it the same -v flag but with full path to host folder and container folder.
+$>docker run -v /Users/olebon/someHostFolder:/path/container_folder
+$>docker run -v $(pwd):/path/container_folder -> trick to not searching for current folder absolute path.
+$>docker run -v //c/Users/olebon/someHostFolder:/path/container_folder
