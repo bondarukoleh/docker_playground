@@ -60,3 +60,44 @@ source - it is a place on host, destination is a place in container.
 Pay attention that mount created after image is created, but it's empty. When container
 is up - another mount created, and when you've add some data in mounted folder - after
 that - data appeared on host.
+
+To see volumes we can
+$>docker volume ls
+DRIVER              VOLUME NAME
+local               3dffece9bbea2f3fa6730a6b2cd4e38f788631e641dda855ae9b3324de059e28
+local               51e1835086ce047f35c5032958e555be6a4022eab5fe48cbd0fdd201db0972d7
+...
+
+It will give us volumes on host.
+After that we can inspect volume by id
+$>docker volume inspect 3dffece9bbea2f3fa6730a6b2cd4e38f788631e641dda855ae9b3324de059e28 (full id needed NOT part if it)
+[
+    {
+        "CreatedAt": "2019-05-23T15:21:24Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/3dffece9bbea2f3fa6730a6b2cd4e38f788631e641dda855ae9b3324de059e28/_data",
+        "Name": "3dffece9bbea2f3fa6730a6b2cd4e38f788631e641dda855ae9b3324de059e28",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+As you can see Mountpoint -> points on some place. When you on Linux - you can check it out. But as we remember
+on Mac, or Windows - docker is in Linux VM, and we cannot just do there, we need to make extra actions.
+
+Also we can see that volumes is just an ids, without any information about what container they're connected
+to, or were connected.
+
+NAMED VOLUMES
+We can specify name for container volume when we creating container.
+docker container run -d --name my_con -v volume_name:/mountedFolder alpine
+
+-v allows us to specify either a new volume that we want to create for this container, 
+    or to create a named volume. -v /mountedFolder -> will do the same as command from dockerfile 
+    VOLUME /mountedFolder, it will bind /mountedFolder in container to new created mount folder in 
+    /var/lib/docker/volumes/21323... So we don't need to to that, if it is in dockerfile. 
+    But we can create a name for volume. -v volume_name:/mountedFolder. It will do the same but 
+    instead of long mount ID we will get a name.
+    BUT be aware that if we'll create another container with same volume name - it will use
+    already created mount host folder.

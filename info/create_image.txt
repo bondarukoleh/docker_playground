@@ -56,3 +56,5 @@ The <dest> is an absolute path, or a path relative to WORKDIR, into which the so
 inside the destination container.
 
 COPY file_from_local.js file_in_image.js
+
+VOLUME - mount container folder (named volumes, volumes, bind mount) to host folder.
