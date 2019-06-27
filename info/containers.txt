@@ -87,3 +87,5 @@ $>docker container port container_name -> "80/tcp -> 0.0.0.0:3000" To get bounde
 If you've created container (via run) from image without bounded port you cannot stop and start it -> port command
   won't tell you anything.
 
+Container exit immediately when the main process is end (CMD, RUN, or either), so to container lives, 
+you need either let something running in it, or run it with -it flag.

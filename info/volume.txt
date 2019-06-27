@@ -91,7 +91,8 @@ to, or were connected.
 
 NAMED VOLUMES
 We can specify name for container volume when we creating container.
-docker container run -d --name my_con -v volume_name:/mountedFolder alpine
+$>docker container run -d --name my_con -v volume_name:/mountedFolder alpine
+$>docker container run -dti --rm --name checkv -v check:/mountedFolder testv
 
 -v allows us to specify either a new volume that we want to create for this container, 
     or to create a named volume. -v /mountedFolder -> will do the same as command from dockerfile 
@@ -119,3 +120,6 @@ So it the same -v flag but with full path to host folder and container folder.
 $>docker run -v /Users/olebon/someHostFolder:/path/container_folder
 $>docker run -v $(pwd):/path/container_folder -> trick to not searching for current folder absolute path.
 $>docker run -v //c/Users/olebon/someHostFolder:/path/container_folder
+
+Also pay attention that VOLUME in Dockerfile and -v in run command - separate things, VOLUME creates it's 
+volume and -v - creates it's own.
