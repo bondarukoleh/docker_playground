@@ -1,0 +1,10 @@
+Docker compose it's a super powerful thing that gives us ability to combine dockers, 
+connect them in one thing.
+Main features:
+ - configure relationships between containers
+ - collect all setting for container in one file.
+ - create one-way environment start-up file used everywhere.
+There are two parts of docker compose:
+YAML-formatted file that describes our solution:
+ - Containers, networks, volumes, images, environment variables etc.
+ - CLI tool docker-compose used for local dev/test automation with those YAML file.

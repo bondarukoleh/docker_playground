@@ -33,7 +33,7 @@ $>docker container stop (container_id) | docker stop (container_id) -> stop the 
 
 $>docker container run -> always start a NEW container. 
 $>docker container start -> starts a stopped one.
-$>docker container logs (id|name) -> show logs of container.
+$>docker container logs (id|name) -> show logs of container. -f flag - if log is big. (follow)
 $>docker container top (id|name) -> show the running processes in container.
 $>docker container rm (id|name) (id|name) (id|name) ... -> remove not running containers. You cannot remove running one,
   you should stop it first (but with docker rm -f (force) - you can rm running container). Also "docker ps -q -a" 

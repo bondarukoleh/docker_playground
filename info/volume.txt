@@ -122,4 +122,19 @@ $>docker run -v $(pwd):/path/container_folder -> trick to not searching for curr
 $>docker run -v //c/Users/olebon/someHostFolder:/path/container_folder
 
 Also pay attention that VOLUME in Dockerfile and -v in run command - separate things, VOLUME creates it's 
-volume and -v - creates it's own.
+volume and -v - creates it's own volume.
+
+Cool thing about binds - is that docker has many things in it. For example many tools for development.
+For simple web developments you need a lot of stuff working on your host machine, and it cost a lot
+of setup, but docker has already setup images, so you don't need to do all the work just up a container
+and work in it.
+
+For example we'll use Jekyll SSG - Static Site Generator, as a SW that we need to keep on host machine
+and setup also (specific version of Ruby needed, and other stuff), but in this case we will use it from
+container and make a bind mount on folder where our logic, and static files are, so we don't need to
+worry about server, and we can easily change version of it. 
+
+
+For correctly working - we can use bretfisher/jekyll-serve ssg container for local development.
+So in neede folder we can
+$>docker container run -p 4000:4000 -v $(pwd)/site bretfisher/jekyll-serve
