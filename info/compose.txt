@@ -99,4 +99,8 @@ TASKS
   that's why I'll set nginx as a proxy server, and upp an apache server with bootstrap
   template site. And since I've make a volume from host source code to container - I can
   change the code and see how it behaves, because apache is looking to my host directory.
+  it's done in -> ../docker-compose/nginx_apache_bootstrap
+
+3. Make a custom drupal image, with installed bootstrap theme.
+  Done in ../docker-compose/custom_drupal_bootstrap
 
