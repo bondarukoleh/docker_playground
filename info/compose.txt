@@ -19,7 +19,13 @@ in docker-compose.yml
  version: '3.7' -> if we don't specify version - we'll get 1st, which is not good.
  services: -> here we specify containers we want to use, hierarchically.
   servicename1: -> name service, should be uniq, this also will be DNS name inside network
-    image: -> (optional) if you use build - set the image you want to build container formatted
+    image: -> (optional) if you use build - set the image name you want to build. If we don't
+      specify this name, and have build command here - image will be created with folder name
+      where the dockerfile is. Image will have name folder_where_dockerfile_is_service_name
+      
+    build: -> section for building images
+      context: . -> where we want to build image
+      dockerfile: -> what dockerfile we want to use to build image.
     command: -> (optional) overrides CMD from docker file.
     environment: -> (optional) ENV in dockerfile, or -e in docker run
     volumes: -> (optional) VOLUME in dockerfile, -v in docker run.
@@ -57,12 +63,40 @@ services:
 And we don't need to type this twice anymore.
 
 Docker-compose CLI
+It's not magic, docker-compose - still talking to docker-server API when it's working.
 It's not designed for production, it's for local development.
 Main commands is:
   $>docker-compose up -> just one shot command to start everything.
   $>docker-compose down -> remove containers, networks, volumes and cont/vol/net
+  $>docker-compose down -v - to remove volumes also
+  $>docker-compose down --rmi local -> deletes created by compose images. But pay attention
+    it won't delete images with "custom" name part.
 
 It's super-cool to store all environment new guy developer needs to setup in one docker-compose.yml
 file. And one thing he has  to do is just install docker, and download docker-compose.yml file, 
 bam and he is ready to work, all needed environment is setup.
+
+To see logs:
+$>docker-compose logs
+watch what's going on, containers, etc.
+$>docker-compose ps
+what's running inside a container
+$>docker-compose top
+
+We can build images with docker-compose.
+ If we use docker-compose up, and in docker-compose.yml - will be build section, then we will
+ build image only after we don't find it in cash. So it will be built only once.
+ To re-build image each time when we up a docker-compose - we need to add --build flag to
+ up command or docker-compose build.
+
+TASKS
+
+1. Make a Drupal content management system. Drupal - it's a site generator.
+  Compose file in ../docker-compose/drupal_CMS/docker-compose.yml
+
+2. Use compose to build and run images.
+  For example I want to check how my site is working in production like environment, 
+  that's why I'll set nginx as a proxy server, and upp an apache server with bootstrap
+  template site. And since I've make a volume from host source code to container - I can
+  change the code and see how it behaves, because apache is looking to my host directory.
 
