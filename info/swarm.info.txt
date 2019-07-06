@@ -1,0 +1,131 @@
+Swarm is compose of nodes.
+Node - is a base unit of swarm, simple machine running docker.
+Two types of nodes - Manager nodes, that responsible for managing nodes, 
+orchestration them and other and Worker nodes - that must only do some work and report 
+about the result.
+  Manager nodes are collected in manager quorum, where they speaking to each other with
+RAFT protocol, more consistent and straight.
+  Worker nodes collected in worker quorum where they speaking wih gossip protocol less
+consistent and bulk.
+  Managers talk with workers via GRPS protocol - fast protocol built over http2.
+  Roles depend on your realization and can be changed dynamically.
+
+Managers have their leader, else managers - are followers, they all forward their traffic
+to their leader. Leader is responsible for orchestration of processes, if leader
+goes down - managers will chose another leader from them via RAFT protocol.
+
+Managers quorum - has some internal data store, shared with every manager in quorum, so 
+we don't need another one as a dependency. If we look in details, each manager has it's 
+own datastore that is a copy of every manager datastore if everything is ok with connection.
+Datastore state is managed by leader, and leader tells every follower which data needs to be
+stored. Another advantage - is performance.
+
+Every manager in swarm have Certificate Authority (which makes them managers), and it can 
+generate identity secret for worker, so any node without this identity cannot be connected.
+
+Workers aware of all managers, managers always tell workers here there are, and if a new
+manger is in, and if one goes down - workers that were connected to internal
+will reconnect to another active.
+
+Orchestration.
+You as a user want new service.
+Manager node:
+ - API - accepts commands from client and creates service object. Checks that everything
+  is ok with your service, and store it to data store, ping orchestrator to create a service.
+ - Orchestrator checks is there any of these services running already, if not - it creates
+task in sheduler to create a service. Loop for service objects.
+ - Allocator - allocates IP addresses to tasks.
+ - Sheduler picks a task and checks is there is an available machine (node, worker) do do this 
+task. And it ask this info from Dispatcher. Assigns tasks to nodes.
+ - Dispatcher knows about every worker that tells him about himself, how busy he is, 
+what he can do etc, so dispatcher pass the task to watcher and keeps looking how 
+the things is going with it.
+
+Worker node:
+ - Worker - connects to dispatcher to check on assigned tasks.
+ - Executor - executes a task.
+
+If the worker is down, dispatcher understands that worker is no longer responding on ping, 
+and it marks this worker as a down one. Orchestrator get this information and check is 
+this worker is needed, if it is so - the flow is the same as with user, orchestration
+will create a task and things will go as usual.
+
+So swarm is a instrument that can help you to collect as many nodes, machines, dockers
+as you want in one manageable unit.
+Docker produces a swarmkit - it's a toolkit to create swarm.
+
+So now we instead of run command will use service command. Each task - is a container that 
+needs to be run.
+
+So we can check if swarm is active be docker info. "Swarm inactive"
+we can do 
+$>docker swarm init -> and swarm did init
+Swarm initialized: current node (xmzuljr8l0747z4lm53nvtu1q) is now a manager.
+To add a worker to this swarm, run the following command:
+    docker swarm join --token SWMTKN-1-4es3n96jx3pkjt9glkfgpbe5zcbjghcer2aoma4xyaotj0xb40-\
+    147nh4rins1hs8sb2lu8kbjik your_ip_here
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the
+ instructions.
+
+Under the hood some work has done:
+Certificate created for swarm, special certificate created for current node. Join tokens are
+created to join the swarm, database is created to store certificates, and all orchestration 
+ information, etc.
+ 
+$>docker node ls
+ID                          HOSTNAME         STATUS  AVAILABILITY  MANAGER STATUS ENGINE VERSION
+xmzuljr8l0747z4lm53nvtu1q * oleh-VirtualBox  Ready   Active        Leader         18.09.6
+
+docker node command is to bringing your node in and out of the swarm, make node a manager or 
+worker, etc.
+
+docker swarm - is for initialize, join leave from swarm.
+
+Creating a swarm - has different philosophy rather then docker container. If we working with
+containers - we always think about it like a main sing, all spinning around a host-container
+and so on. When creating a cluster (swarm) - containers loose their individuality, we working
+with them as with tasks, and they don't need names and so on. we just throw a requirements
+for the service and swarm is resolving it, that's  all.
+
+$>docker service create alpine ping 8.8.8.8
+n80hhik4vbgjj052s0hl1okxs -> service id, not container
+overall progress: 1 out of 1 tasks 
+1/1: running   
+verify: Service converged
+
+$>docker service ls -> to show a services
+ID           NAME       MODE       REPLICAS IMAGE         PORTS
+n80hhik4vbgj zen_morse  replicated 1/1      alpine:latest
+REPLICAS - 1/1 how_many_services_running/how_many_you've_asked_to_run
+
+$>docker service ps zen_morse -> to show the task.
+ID           NAME        IMAGE         NODE            DESIRED STATE CURRENT STATE         ERROR PORTS
+q410bnacjmkj zen_morse.1 alpine:latest oleh-VirtualBox Running       Running 3 minutes ago 
+
+$>docker container ls -> it still works, because it still a container running.
+CONTAINER ID IMAGE         COMMAND        CREATED       STATUS       PORTS 
+d919dcfeb805 alpine:latest "ping 8.8.8.8" 5 minutes ago Up 5 minutes
+NAMES
+zen_morse.1.q410bnacjmkjnhfmpmg6xlzkr -> you can see that it has random name given by a swarm.
+
+to change something - we can
+$>docker service update n80hhik4vbgj/zen_morse (service id, or name) --replicas 3
+$>docker service ls
+ID           NAME        MODE          REPLICAS  IMAGE
+n80hhik4vbgj zen_morse   replicated    3/3       alpine:latest 
+$>docker service ps zen_morse
+ID           NAME        IMAGE         NODE            DESIRED STATE CURRENT STATE          
+q410bnacjmkj zen_morse.1 alpine:latest oleh-VirtualBox Running       Running 10 minutes ago                       
+znd66x7bs4jd zen_morse.2 alpine:latest oleh-VirtualBox Running       Running 38 seconds ago                       
+3e5993w0ynpb zen_morse.3 alpine:latest oleh-VirtualBox Running       Running 38 seconds ago 
+
+If we force remove  one of the container via "docker container rm -f zen_morse.1.q410bnac..." 
+swarm will automatically recover it.
+To remove the whole swarm.
+$>docker service rm zen_morse -> it will remove all containers (tasks) created in it also.
+
+So for example we need to update something in container, without re-creating it, some env 
+vars or something, or something with cp usage - we'll use docker update command. 
+But what if our container in production and there a new version, and we don't want to turn
+off the old one, until new one isn't started, because we don't want to lose any second of
+our service being available? "docker service update" has some options for that.

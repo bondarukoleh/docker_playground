@@ -11,3 +11,5 @@ Any command has "--help"
 $>docker container rm --help -> show you all possible variations of this command flags
 
 Alpine - security oriented Linux distribution.
+
+docker info - to see whole information about the things are.
