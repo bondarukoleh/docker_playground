@@ -199,3 +199,101 @@ we can specify name of node to check what services it got
 leader_node$>docker node ps node2 (node name, since it node command)
 
 So as you notice - we can do most thing from leader machine, what is truly comfortable.
+
+----------------------------------------------------------------------------------------------
+Tricks with swarm
+----------------------------------------------------------------------------------------------
+# Swarm Basic Features and How to Use Them In Your Workflow
+## Scaling Out with Overlay Networking
+docker network create --driver overlay mydrupal
+
+To create a named service and add it to specific network
+docker service create --name psql --network mydrupal -e POSTGRES_PASSWORD=mypass postgres
+
+docker service ps psql
+
+to check logs in container.
+docker container logs psql TAB COMPLETION (it will give you a big id of container in swarm)
+database running on node1
+
+create a drupal service
+docker service create --name drupal --network mydrupal -p 80:80 drupal
+
+To check in real time what's happening - we can add watch before ls command
+watch docker service ls
+drupal website running on node2
+
+How do they talk to each other?
+thru the service name.
+
+Go to the ip:80 of drupal machine, and via UI config that host of database configuration
+is psql (like service name). And it connects to it, this is possible because of overlay network
+driver - it makes swarm acts as all nodes is in the same subnet.
+You can also see that if you'll go at any ip of your nodes running - all will be redirected
+to drupal site, but drupal is running only on node2, how is it happening?
+Because of routing mash.
+Super cool load-balancer, that listens all traffic that come to all
+nodes in swarm, and routes it to needed node. Since we using services and tasks - they can fail, 
+re-create, re-run and so on, so they can change. And it could be a big pain in ass if you should
+set ips, ports and firewalls for these containers each time ip is changed - mash do this job for you.
+Basically it creates VIP for every service.
+Bless docker.
+
+to checkout service config.json file
+docker service inspect drupal
+
+##Create a Multi-Service Multi-Node Web App
+docker node ls
+docker service ls
+docker network create -d overlay backend
+docker network create -d overlay frontend
+docker service create --name vote -p 80:80 --network frontend -- replica 2 COPY IMAGE
+docker service create --name redis --network frontend --replica 1 redis:3.2
+docker service create --name worker --network frontend --network backend COPY IMAGE
+docker service create --name db --network backend COPY MOUNT INFO
+docker service create --name result --network backend -p 5001:80 COPY INFO
+docker service ls
+docker service ps result
+docker service ps redis
+docker service ps db
+docker service ps vote
+docker service ps worker
+cat /etc/docker/
+docker service logs worker
+docker service ps worker
+
+## Swarm Stacks and Production Grade Compose
+docker stack deploy -c example-voting-app-stack.yml voteapp
+docker stack
+docker stack ls
+docker stack ps voteapp
+docker container ls
+docker stack services voteapp
+docker stack ps voteapp
+docker network ls
+docker stack deploy -c example-voting-app-stack.yml voteapp
+
+## Using Secrets in Swarm Services
+docker secret create psql_usr psql_usr.txt
+echo "myDBpassWORD" | docker secret create psql_pass - TAB COMPLETION
+docker secret ls
+docker secret inspect psql_usr
+docker secret create --name psql --secret psql_user --secret psql_pass -e POSTGRES_PASSWORD_FILE=/run/secrets/psql_pass -e POSTGRES_USER_FILE=/run/secrets/psql_user postgres
+docker service ps psql
+docker exec -it psql.1.CONTAINER NAME bash
+docker logs TAB COMPLETION
+docker service ps psql
+docker service update --secret-rm
+
+## Using Secrets with Swarm Stacks
+vim docker-compose.yml
+docker stack deploy -c docker-compose.yml mydb
+docker secret ls
+docker stack rm mydb
+
+##Create A Stack with Secrets and Deploy
+vim docker-compose.yml
+docker stack deploy - c docker-compose.yml drupal
+echo STRING |docker secret create psql-ps - VALUE
+docker stack deploy -c docker-compose.yml drupal
+docker stack ps drupal
