@@ -129,3 +129,73 @@ vars or something, or something with cp usage - we'll use docker update command.
 But what if our container in production and there a new version, and we don't want to turn
 off the old one, until new one isn't started, because we don't want to lose any second of
 our service being available? "docker service update" has some options for that.
+
+Managers also do some work, since they are privileged workers.
+
+To make a swarm:
+On machine that you want to work with (as a manager)
+$>docker swarm init --advertise-addr 192.186.0.1
+
+Swarm initialized: current node (rzj79ruf66wkj38gs6ctjmdma) is now a manager.
+To add a worker to this swarm, run the following command:
+    docker swarm join --token SWMTKN-1-2d3bvhjb67r4irvqdvovhq3sran5tqy3sz8judccarsbt4c0j6-3 \
+    yv5gyjvtdjo68eix4eftrmgt 192.168.0.13:2377
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions
+
+So you just copy and paste docker swarm join command to terminal of machine that you want
+to add as a worker
+
+manager_node$>docker node ls
+ID                   HOSTNAME  STATUS AVAILABILITY MANAGER STATUS  ENGINE VERSION
+rzj79ruf66wkj38g *   node1     Ready  Active       Leader          19.03.0-beta2
+2u6bm1wlph425uvo     node2     Ready  Active                       19.03.0-beta2
+
+* - is where you are now
+As you can see there two nodes, and one is a leader.
+
+worker_node$>docker node ls
+Error response from daemon: This node is not a swarm manager. Worker nodes can't be used
+to view or modify cluster state. Please run this command on a manager node or promote
+the current node to a manager
+We cannot use swarm commands in worker.
+
+To promote worker to manager:
+manager_machine$>docker node update --role manager 2u6bm1wlph425uvo (id of worker in swarm)
+
+manager_node$>docker node ls
+ID                   HOSTNAME  STATUS AVAILABILITY MANAGER STATUS  ENGINE VERSION
+rzj79ruf66wkj38g *   node1     Ready  Active       Leader          19.03.0-beta2
+2u6bm1wlph425uvo     node2     Ready  Active       Reachable       19.03.0-beta2
+
+As you can see, new manager became reachable but leader is still leader.
+To add manager by default
+manager_machine$>docker swarm join-token manager
+
+To add a manager to this swarm, run the following command:
+docker swarm join --token SWMTKN-1-2d3bvhjb67r4irvqdvovhq3sran5tqy3sz8judccarsbt4c0j6-6 \
+  7qr13gj7ksprmdkaef0zht91 192.168.0.13:2377
+
+not_in_swarm_node$>docker swarm join --token SWMTKN-1-2d3bvhjb6...
+
+We can change these keys for security reason.
+
+And now let's do some work. And start it from leader node.
+leader_node$>docker service create --replicas 3 alpine ping 8.8.8.8
+leader_node$>docker service ls
+ID                NAME                MODE                REPLICAS   IMAGE      
+xpe0qb9al765      zen_shockley        replicated          3/3        alpine:latest
+leader_node$>docker service ps zen_shockley
+ID           NAME           IMAGE         NODE    DESIRED STATE   CURRENT STATE      
+xkr8ou7sm7ea zen_shockley.1 alpine:latest node2   Running         Running 2 minutes ago
+vi532301kl64 zen_shockley.2 alpine:latest node3   Running         Running 2 minutes ago
+awt29rckai1b zen_shockley.3 alpine:latest node1   Running         Running 2 minutes ago
+
+leader_node$>docker node ps
+ID           NAME           IMAGE         NODE  DESIRED STATE  CURRENT STATE         
+awt29rckai1b zen_shockley.3 alpine:latest node1 Running        Running 6 minutes ago
+
+As you can see on leader machine 3rd service is running.
+we can specify name of node to check what services it got
+leader_node$>docker node ps node2 (node name, since it node command)
+
+So as you notice - we can do most thing from leader machine, what is truly comfortable.
