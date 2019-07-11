@@ -200,6 +200,12 @@ leader_node$>docker node ps node2 (node name, since it node command)
 
 So as you notice - we can do most thing from leader machine, what is truly comfortable.
 
+There is a thing called docker stack. Feature for deploying services in production.
+Deploy information is stored in compose-file, and will be running only when you run 
+stack command for some swarm.
+
+There is a secret in swarm. Some encrypted entity to store passwords, db, private data, etc.
+
 ----------------------------------------------------------------------------------------------
 Tricks with swarm
 ----------------------------------------------------------------------------------------------
@@ -252,6 +258,9 @@ docker service create --name vote -p 80:80 --network frontend -- replica 2 COPY 
 docker service create --name redis --network frontend --replica 1 redis:3.2
 docker service create --name worker --network frontend --network backend COPY IMAGE
 docker service create --name db --network backend COPY MOUNT INFO
+To volume some folder in swarm - you should do
+--mount type=volume, source=host_folder/or_name_for_volume, target=container_folder
+
 docker service create --name result --network backend -p 5001:80 COPY INFO
 docker service ls
 docker service ps result
