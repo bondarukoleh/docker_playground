@@ -260,6 +260,17 @@ docker-compose.prod.yml - prod setting, inherited from simple compose also.
 
 and depend on where we are, on jenkins or what we want to do - just run the right compose file from swarm.
 
+Updating the service you can:
+- replace or update services
+  docker service update --image newImage:1.2 <service_name>
+  docker service update --env-addd NODE_ENV=production --publish-rm 8080 --publish-add 9090:80 (add var or port)
+- change number of replicas
+  docker service scale web=8 api=6
+- limit service downtime
+- rollbacks, health-checks
+- make update a stack deploy
+and many more.
+
 ##Create a Multi-Service Multi-Node Web App
 docker node ls
 docker service ls

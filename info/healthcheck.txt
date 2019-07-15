@@ -1,0 +1,21 @@
+Supported in dockerfile, compose YAML, docker run, and swarm services.
+Healthcheck command will be executed inside of container.
+Healthcheck expects 0 or 1 exit status of command.
+Three states - starting (first 30 seconds by default), healthy (30 seconds, but has a retry mechanism) and unhealthy.
+Docker do nothing with unhealthy containers, if it assumes that container is unhealthy - it will mark it, 
+and we can check it in "docker container ls" or "docker container inspect" but we can't execute something in it, 
+swarm service - can help us with this.
+
+$>docker run --health-cmd="curl -f localhost:9090/some_specific_endpoint || false"
+and there bunch of config flags, intervals, retries, timeouts, start-periods etc.
+false here because if you have some commands with which you want to do a healthcheck but they don't produce 
+clear exit code like 0 or 1 - we can do this trick.
+
+Same stuff - we can add to dockerfile.
+HEALTHCHECK --timeout=2s --retries=3 CMD curl -f http://localhost/endpoint || false (some basic example)
+
+compose-file
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost/endpoint"]
+  interval: 1m30s
+  retries: 10s
