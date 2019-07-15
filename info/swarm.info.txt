@@ -249,6 +249,17 @@ Bless docker.
 to checkout service config.json file
 docker service inspect drupal
 
+great thing - you can setup a few compose files for each purpose, and they will be inheriting each other.
+You can have
+docker-compose.yml - here the basic config with images
+docker-compose.override.yml - it will be overridden on top of simple compose whe we "$>docker-compose up".
+docker-compose.test.yml - testing data, testing env, tests (we don't need to specify images - they already specified)
+  to run it - we need to specify base file first, so
+  $>docker-compose -f docker-compose.yml -f docker-compose.test.yml up;
+docker-compose.prod.yml - prod setting, inherited from simple compose also.
+
+and depend on where we are, on jenkins or what we want to do - just run the right compose file from swarm.
+
 ##Create a Multi-Service Multi-Node Web App
 docker node ls
 docker service ls
