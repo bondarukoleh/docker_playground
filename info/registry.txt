@@ -1,0 +1,16 @@
+We can have a docker webhook in docker account, where we can setup a jenkins (or some else) hook, that when 
+we push a new version of docker - it can trigger some job in it.
+Also - if we store our code for image on github, or bitbucket - there is another hook - we can set a repository
+connected to our account - and when we push some new code in it - docker can automatically grab that code, 
+and re-build an image from it, it calls automated build. Also more, we can set an addition repositories that our 
+image depend on - and we can automatically re-build it if something new is pushed to them. For example image code
+in repo 1 and app is in repo 2. When we push to 1 - image builded. When we push changes to 2, and we want them 
+to be stored in image - we don't have to push empty commit in repo 1 - it will be re-builded automatically.
+Or we depend on some image repo - for example db, if it is updated - we don't have to worry about it.
+
+You can have a local registry, because of security or network issues, like your own docker hub. The Registry
+is a stateless, highly scalable server side application that stores and lets you distribute Docker images.
+You can tag images and push them to registry, and pull from it, and much more.
+
+You can create a swarm registry also. Basically all swarm nodes should have access to same repository - and
+they will grab images from it.
