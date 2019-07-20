@@ -13,3 +13,12 @@ $>docker container rm --help -> show you all possible variations of this command
 Alpine - security oriented Linux distribution.
 
 docker info - to see whole information about the things are.
+
+Permissions to get files created for example node app container (with "node" user) by postgres container, 
+we can set by chown, chmod commands. 
+Command ADD/COPY in dockerfile - also has --chown flag, witch can help to manage needed permissions.
+If we need to change permissions in runtime - docker-entrypoint script can help. That's the script run
+everytime the container run and sets perms to needed folders. But pay attention, this script will run
+under user - you've set up in dockerfile, so if you try to set perms for node container from the node user - 
+you'll probably fail. Dirty hack - is that the permissions of e.g. root user (perms id) - is just a number, 
+so if you know it - you can set new perm id to your node user - and it will have permissions of root.
