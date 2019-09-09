@@ -92,3 +92,14 @@ $>docker container run --rm --net my_app_net centos curl -s (silent, without req
   "cluster_uuid" : "8kizL2d1QxGHjSi9K-RT8g",
   ...
 }
+
+
+To run from sudo user.
+docker exec -u root -t -i container_id /bin/bash
+
+FROM ubuntu:12.04
+RUN apt-get update && \
+      apt-get -y install sudo
+RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
+USER docker
+CMD /bin/bash
