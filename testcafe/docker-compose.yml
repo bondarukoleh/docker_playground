@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  edge:
+    image: mcr.microsoft.com/msedge/msedgedriver
+    ports:
+      - '9515:9515'
+  tests:
+    image: custom_tests
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:80'
