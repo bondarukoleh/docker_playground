@@ -35,7 +35,7 @@ in docker-compose.yml
  networks: ->  (optional) same as docker network create.
 
 So here in docker-compose, we can store all work, all docker run commands that we should type
-manually, or create a sell scripts for them, we can pull all command for setup our environment 
+manually, or create a shell scripts for them, we can pull all command for setup our environment 
 and keep it here.
 
 Simple example. To create our SSG we should type a big command in terminal:

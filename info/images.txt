@@ -1,4 +1,4 @@
-$>docker pull container_name
+$>docker pull image_name
 $>docker image ls
 
 (if there is no bash inside container)
@@ -65,7 +65,7 @@ $>docker build -t bondarukoleh/node10_with_ubuntu:basic .
 and then we can push
 $>docker push bondarukoleh/node10_with_ubuntu:latest
 
-We can push container to our docker hub.
+We can push an image to our docker hub.
 $>docker image push bondarukoleh/nginx -> username/ should be the same with yours.
 
 You should do login before push. We can specify url you want to login to.

@@ -29,7 +29,7 @@ RUN sudo apt-get install curl \
  && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash \
  && nvm install node \
  && nvm use node -> this will be in one layer in image
-RUN npm clone http://github.com/some_repo.git && npm i -> this will be another layer, stored differently.
+RUN git clone http://github.com/some_repo.git && cd some_repo && npm i -> this will be another layer, stored differently.
 
 Docker has his own log file, so we don't need to worry about it, all we want to do is to show log in stdout
   or stderr.
