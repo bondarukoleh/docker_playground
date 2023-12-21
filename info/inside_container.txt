@@ -13,7 +13,7 @@ For example $>docker container run -it nginx bash -> will give you a terminal in
 When you finish your work, and just exit from container bash cli -> docker stops automatically. 
 
 If you install something in your container, stop and start it once again -> you'll have your installed 
-stuff there, but if you created a new container -> ou won't get those things. 
+stuff there, but if you created a new container -> you won't get those things. 
 
 $>docker container start -ai container_name (-a for attach, attaches STDOUT/ER and forward signal)
 But be aware, if you've create a container from some image - and didn't set the "-it _name_ bash"
